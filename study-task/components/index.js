@@ -1,2 +1,9 @@
 export { default as Title } from "./Title";
 export { default as QuickStatistic } from "./QuickStatistic";
+export { default as Dropmenu } from "./Dropmenu";
+export { default as Congragulation } from "./Congragulation";
+export { default as Header } from "./Header";
+export { default as Filters } from "./Filters";
+export { default as TaskList } from "./TaskList";
+export { default as TaskItem } from "./TaskItem";
+export { default as AddTask } from "./AddTask";
