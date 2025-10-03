@@ -5,7 +5,7 @@ type TitleProps = {
 function Title({ title }: TitleProps) {
   return (
     <>
-      <h1 className="ml-[10px] font-extrabold text-[36px]">{title}</h1>
+      <h1 className="font-extrabold text-[36px]">{title}</h1>
     </>
   );
 }
