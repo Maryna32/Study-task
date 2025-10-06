@@ -1,4 +1,5 @@
 "use client";
+import { supabase } from "@/lib/supabaseClient";
 import { Input } from "./ui/input";
 import {
   Select,
@@ -58,31 +59,59 @@ function AddTask() {
     );
   };
 
-  const handleSaveTask = () => {
+  const handleSaveTask = async () => {
     if (!taskName.trim()) {
       toast.warning("Вкажіть назву завдання");
       return;
     }
 
-    const newTask = {
-      subject: selected,
-      name: taskName,
-      deadline,
-      priority: selectedPriority,
-      status: selectedStatus,
-      done: isDone,
-      notes,
-    };
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      toast.error("Користувач не авторизований");
+      return;
+    }
 
-    console.log("Збережене завдання:", newTask);
-    toast.success("Завдання збережено!");
+    const token = session.access_token;
 
-    setTaskName("");
-    setDeadline("");
-    setSelectedPriority(priority[1]);
-    setSelectedStatus(statusOptions[0]);
-    setIsDone(false);
-    setNotes("");
+    const res = await fetch("/api/tasks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: taskName,
+        deadline,
+        priority:
+          selectedPriority === "Високий"
+            ? "HIGH"
+            : selectedPriority === "Середній"
+            ? "MEDIUM"
+            : "LOW",
+        status:
+          selectedStatus === "Не розпочато"
+            ? "NOT_STARTED"
+            : selectedStatus === "В процесі"
+            ? "IN_PROGRESS"
+            : "DONE",
+        done: isDone,
+        notes,
+        subjectName: selected,
+        token,
+      }),
+    });
+
+    if (res.ok) {
+      toast.success("Завдання збережено!");
+      setTaskName("");
+      setDeadline("");
+      setSelectedPriority(priority[1]);
+      setSelectedStatus(statusOptions[0]);
+      setIsDone(false);
+      setNotes("");
+    } else {
+      const error = await res.json();
+      toast.error(error.message || "Помилка при збереженні завдання");
+    }
   };
 
   return (
