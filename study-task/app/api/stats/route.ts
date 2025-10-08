@@ -26,7 +26,6 @@ export async function GET(req: Request) {
 
     const now = new Date();
 
-    // Початок і кінець сьогоднішнього дня
     const startOfToday = new Date(
       now.getFullYear(),
       now.getMonth(),
@@ -46,13 +45,13 @@ export async function GET(req: Request) {
       999
     );
 
-    // Початок завтрашнього дня
-    const startOfTomorrow = new Date(startOfToday);
-    startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+    const startOfWeek = new Date(startOfToday);
+    const day = startOfWeek.getDay(); // 0 = неділя
+    startOfWeek.setDate(startOfWeek.getDate() - (day === 0 ? 6 : day - 1));
+    startOfWeek.setHours(0, 0, 0, 0);
 
-    // Кінець періоду "цього тижня" (7 днів від СЬОГОДНІ, включаючи сьогодні)
-    const endOfWeek = new Date(startOfToday);
-    endOfWeek.setDate(endOfWeek.getDate() + 6); // +6 днів від сьогодні = всього 7 днів
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(endOfWeek.getDate() + 6);
     endOfWeek.setHours(23, 59, 59, 999);
 
     const stats = {
@@ -72,10 +71,9 @@ export async function GET(req: Request) {
           t.status !== "DONE"
       ).length,
 
-      // Завдання на найближчі 7 днів (включаючи сьогодні)
-      upcoming: tasks.filter(
+      thisWeek: tasks.filter(
         (t) =>
-          t.deadline >= startOfToday &&
+          t.deadline >= startOfWeek &&
           t.deadline <= endOfWeek &&
           t.status !== "DONE"
       ).length,
