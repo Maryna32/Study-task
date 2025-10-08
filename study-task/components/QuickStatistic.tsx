@@ -18,7 +18,7 @@ type TaskStats = {
   inProgress: number;
   overdue: number;
   today: number;
-  upcoming: number;
+  thisWeek: number;
   highPriority: number;
 };
 
@@ -176,7 +176,7 @@ function QuickStatistic() {
         {/* Найближчі 7 днів */}
         <div className="p-4 bg-orange-50 rounded-lg font-bold text-orange-600">
           <p className="text-sm text-muted-foreground">Цього тижня</p>
-          <p className="text-2xl">{stats.upcoming}</p>
+          <p className="text-2xl">{stats.thisWeek}</p>
         </div>
       </div>
 
