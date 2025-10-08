@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Input } from "./ui/input";
 import {
@@ -11,32 +12,50 @@ import {
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 function AddTask() {
-  const [subjects, setSubjects] = useState([
-    "Математика",
-    "Фізика",
-    "Хімія",
-    "Історія",
-    "Англійська",
-  ]);
-  const [priority, setPriority] = useState(["Високий", "Середній", "Низький"]);
-  const [statusOptions] = useState(["Не розпочато", "В процесі", "Завершено"]);
-
-  const [selected, setSelected] = useState(subjects[0]);
-  const [selectedPriority, setSelectedPriority] = useState(priority[1]);
-  const [selectedStatus, setSelectedStatus] = useState(statusOptions[0]);
-
+  const [subjects, setSubjects] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string>("");
   const [showInput, setShowInput] = useState(false);
   const [newSubject, setNewSubject] = useState("");
 
   const [taskName, setTaskName] = useState("");
   const [deadline, setDeadline] = useState("");
+  const [priorityOptions] = useState(["Високий", "Середній", "Низький"]);
+  const [statusOptions] = useState(["Не розпочато", "В процесі", "Завершено"]);
+  const [selectedPriority, setSelectedPriority] = useState("Середній");
+  const [selectedStatus, setSelectedStatus] = useState("Не розпочато");
   const [isDone, setIsDone] = useState(false);
   const [notes, setNotes] = useState("");
+  const router = useRouter();
 
-  const handleAddSubject = () => {
+  const goToTasks = () => {
+    router.push("/tasks");
+  };
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) return;
+
+      const res = await fetch("/api/subjects", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const json = await res.json();
+      if (res.ok) {
+        if (json.subjects.length === 0) {
+          setShowInput(true);
+        } else {
+          setSubjects(json.subjects);
+          setSelected(json.subjects[0]);
+        }
+      }
+    };
+    fetchSubjects();
+  }, []);
+
+  const handleAddSubject = async () => {
     const name = newSubject.trim();
     if (!name) return;
 
@@ -45,11 +64,29 @@ function AddTask() {
       return;
     }
 
-    setSubjects((prev) => [...prev, name]);
-    setSelected(name);
-    toast.success(`Додано новий предмет: ${name}`);
-    setNewSubject("");
-    setShowInput(false);
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData?.session?.access_token;
+    if (!token) {
+      toast.error("Користувач не авторизований");
+      return;
+    }
+
+    const res = await fetch("/api/subjects", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, token }),
+    });
+    const json = await res.json();
+
+    if (res.ok && json.success) {
+      setSubjects((prev) => [...prev, name]);
+      setSelected(name);
+      setNewSubject("");
+      setShowInput(false);
+      toast.success(`Додано новий предмет: ${name}`);
+    } else {
+      toast.error(json.error || "Помилка при створенні предмета");
+    }
   };
 
   const toggleDone = () => {
@@ -65,15 +102,18 @@ function AddTask() {
       return;
     }
 
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (!session) {
-      toast.error("Користувач не авторизований");
+    const subjectToSend = showInput ? newSubject.trim() : selected;
+    if (!subjectToSend) {
+      toast.warning("Вкажіть предмет");
       return;
     }
 
-    const token = session.access_token;
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData?.session?.access_token;
+    if (!token) {
+      toast.error("Користувач не авторизований");
+      return;
+    }
 
     const res = await fetch("/api/tasks", {
       method: "POST",
@@ -95,127 +135,104 @@ function AddTask() {
             : "DONE",
         done: isDone,
         notes,
-        subjectName: selected,
+        subjectName: subjectToSend,
         token,
       }),
     });
 
-    if (res.ok) {
+    const json = await res.json();
+    if (res.ok && json.success) {
       toast.success("Завдання збережено!");
       setTaskName("");
       setDeadline("");
-      setSelectedPriority(priority[1]);
-      setSelectedStatus(statusOptions[0]);
+      setSelectedPriority("Середній");
+      setSelectedStatus("Не розпочато");
       setIsDone(false);
       setNotes("");
     } else {
-      const error = await res.json();
-      toast.error(error.message || "Помилка при збереженні завдання");
+      toast.error(json.error || "Помилка при збереженні завдання");
     }
   };
 
   return (
     <div className="flex flex-col gap-2 p-4 border rounded-md w-[800px]">
       <h2 className="text-lg font-semibold">Додання нового завдання</h2>
-
-      {/* Вибір предмета */}
-      <Label htmlFor="nameSubject">Виберіть предмет</Label>
-      <div className="flex items-center gap-2">
-        <Select
-          value={selected}
-          onValueChange={setSelected}
-          name="subject"
-          required
-        >
-          <SelectTrigger className="max-w-xs bg-white">
-            <SelectValue placeholder="Оберіть предмет" />
-          </SelectTrigger>
-          <SelectContent className="bg-white">
-            {subjects.map((subject) => (
-              <SelectItem key={subject} value={subject}>
-                {subject}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        {!showInput ? (
-          <Button
-            size="sm"
-            className="w-fit"
-            onClick={() => setShowInput(true)}
-          >
+      <Label>Виберіть предмет</Label>
+      {!showInput ? (
+        <div className="flex items-center gap-2">
+          <Select value={selected} onValueChange={setSelected}>
+            <SelectTrigger className="max-w-xs bg-white">
+              <SelectValue placeholder="Оберіть предмет" />
+            </SelectTrigger>
+            <SelectContent className="bg-white">
+              {subjects.map((subject) => (
+                <SelectItem key={subject} value={subject}>
+                  {subject}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button size="sm" onClick={() => setShowInput(true)}>
             Додати предмет
           </Button>
-        ) : (
-          <div className="flex gap-2 items-center">
-            <Input
-              autoFocus
-              type="text"
-              placeholder="Назва предмету"
-              className="max-w-xs dark:bg-muted"
-              value={newSubject}
-              onChange={(e) => setNewSubject(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleAddSubject();
-                if (e.key === "Escape") {
-                  setNewSubject("");
-                  setShowInput(false);
-                }
-              }}
-            />
-            <Button size="sm" className="w-fit" onClick={handleAddSubject}>
-              Підтвердити
-            </Button>
-            <Button
-              size="sm"
-              className="w-fit"
-              variant="outline"
-              onClick={() => {
+        </div>
+      ) : (
+        <div className="flex gap-2 items-center">
+          <Input
+            autoFocus
+            type="text"
+            placeholder="Назва предмету"
+            value={newSubject}
+            onChange={(e) => setNewSubject(e.target.value)}
+            className="max-w-xs"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleAddSubject();
+              if (e.key === "Escape") {
                 setNewSubject("");
                 setShowInput(false);
-              }}
-            >
-              Скасувати
-            </Button>
-          </div>
-        )}
-      </div>
+              }
+            }}
+          />
+          <Button size="sm" onClick={handleAddSubject}>
+            Підтвердити
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              setNewSubject("");
+              setShowInput(false);
+            }}
+          >
+            Скасувати
+          </Button>
+        </div>
+      )}
 
-      {/* Назва завдання */}
-      <Label htmlFor="taskName">Введіть відомості про завдання</Label>
+      <Label>Назва завдання</Label>
       <Input
         type="text"
-        id="taskName"
         placeholder="Назва завдання"
-        className="max-w-xs dark:bg-muted"
         value={taskName}
         onChange={(e) => setTaskName(e.target.value)}
+        className="max-w-xs"
       />
 
-      {/* Дедлайн */}
-      <Label htmlFor="taskDateOver">Дедлайн здачі</Label>
+      <Label>Дедлайн</Label>
       <Input
         type="datetime-local"
-        id="taskDateOver"
-        className="w-[180px] dark:bg-muted"
+        className="w-[180px]"
         value={deadline}
         onChange={(e) => setDeadline(e.target.value)}
       />
 
-      {/* Пріоритет */}
-      <Label htmlFor="taskPriority">Вкажіть пріоритет</Label>
-      <Select
-        value={selectedPriority}
-        onValueChange={setSelectedPriority}
-        name="priority"
-        required
-      >
+      <Label>Пріоритет</Label>
+      <Select value={selectedPriority} onValueChange={setSelectedPriority}>
         <SelectTrigger className="max-w-xs bg-white">
           <SelectValue placeholder="Оберіть пріоритет" />
         </SelectTrigger>
         <SelectContent className="bg-white">
-          {priority.map((p) => (
+          {priorityOptions.map((p) => (
             <SelectItem key={p} value={p}>
               {p}
             </SelectItem>
@@ -223,8 +240,7 @@ function AddTask() {
         </SelectContent>
       </Select>
 
-      {/* Статус та чекбокс */}
-      <Label htmlFor="taskStatus">Статус завдання</Label>
+      <Label>Статус</Label>
       <div className="flex items-center gap-3">
         <Select
           value={selectedStatus}
@@ -232,12 +248,11 @@ function AddTask() {
             setSelectedStatus(value);
             setIsDone(value === "Завершено");
           }}
-          name="status"
         >
           <SelectTrigger className="max-w-xs bg-white">
             <SelectValue placeholder="Статус" />
           </SelectTrigger>
-          <SelectContent className="bg-white">
+          <SelectContent className=" bg-white">
             {statusOptions.map((s) => (
               <SelectItem key={s} value={s}>
                 {s}
@@ -245,7 +260,6 @@ function AddTask() {
             ))}
           </SelectContent>
         </Select>
-
         <label className="flex items-center gap-1 cursor-pointer">
           <input
             type="checkbox"
@@ -257,20 +271,22 @@ function AddTask() {
         </label>
       </div>
 
-      {/* Нотатки */}
-      <Label htmlFor="taskNotes">Нотатки</Label>
+      <Label>Нотатки</Label>
       <textarea
-        id="taskNotes"
+        className="w-full max-w-xs h-20 p-2 border rounded-md resize-none"
         placeholder="Додаткові відомості"
-        className="w-full max-w-xs h-20 p-2 border rounded-md dark:bg-muted resize-none"
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
       />
+      <div className="flex gap-5">
+        <Button size="sm" className="w-fit mt-2" onClick={handleSaveTask}>
+          Зберегти
+        </Button>
 
-      {/* Кнопка Зберегти */}
-      <Button size="sm" className="w-fit mt-2" onClick={handleSaveTask}>
-        Зберегти
-      </Button>
+        <Button size="sm" className="w-fit mt-2" onClick={goToTasks}>
+          Перейти до завдань
+        </Button>
+      </div>
     </div>
   );
 }
