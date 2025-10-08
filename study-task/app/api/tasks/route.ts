@@ -64,3 +64,39 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export async function GET(req: Request) {
+  try {
+    const authHeader = req.headers.get("Authorization");
+    const token = authHeader?.replace("Bearer ", "");
+
+    if (!token)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser(token);
+
+    if (userError || !user)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const tasks = await prisma.task.findMany({
+      where: { userId: user.id },
+      include: {
+        subject: true,
+      },
+      orderBy: {
+        deadline: "asc",
+      },
+    });
+
+    return NextResponse.json({ success: true, tasks });
+  } catch (err) {
+    console.error("Error fetching tasks:", err);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
