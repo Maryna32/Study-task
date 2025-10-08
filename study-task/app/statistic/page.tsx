@@ -1,11 +1,10 @@
 "use client";
-import { Header } from "@/components/index";
+import { Statistic } from "@/components/index";
 
 function StatisticPage() {
   return (
     <div>
-      <Header />
-      <div className="pl-[30px] pt-[20px]">StatisticPage</div>
+      <Statistic />
     </div>
   );
 }
