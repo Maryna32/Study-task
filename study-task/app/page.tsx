@@ -11,7 +11,7 @@ export default function HomePage() {
 
         {/* Основний контент */}
         <div className="pl-[30px] pt-[20px]">
-          <Congragulation name="Mary" />
+          <Congragulation />
 
           <QuickStatistic />
         </div>
