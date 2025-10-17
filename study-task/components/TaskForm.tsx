@@ -215,7 +215,11 @@ export function TaskForm({
       )}
 
       <Label>Назва завдання</Label>
-      <Input value={taskName} onChange={(e) => setTaskName(e.target.value)} />
+      <Input
+        value={taskName}
+        className="max-w-xs"
+        onChange={(e) => setTaskName(e.target.value)}
+      />
 
       <Label>Дедлайн</Label>
       <Input
