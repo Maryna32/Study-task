@@ -8,11 +8,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import TaskItem from "./TaskItem";
+import { useRouter } from "next/navigation";
 
 function TaskList() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -62,7 +64,7 @@ function TaskList() {
   }, []);
 
   const handleEdit = (taskId: string) => {
-    console.log("Редагувати завдання:", taskId);
+    router.push(`/edit-task?id=${taskId}`);
   };
 
   const handleDelete = async (taskId: string) => {
