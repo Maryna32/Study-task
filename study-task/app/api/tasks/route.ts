@@ -81,8 +81,26 @@ export async function GET(req: Request) {
     if (userError || !user)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+    const url = new URL(req.url);
+    const subjectIdParam = url.searchParams.get("subjectId");
+    const priorityParam = url.searchParams.get("priority");
+    const doneParam = url.searchParams.get("done");
+
+    const whereClause: any = { userId: user.id };
+    if (subjectIdParam && subjectIdParam !== "all") {
+      whereClause.subjectId = Number(subjectIdParam);
+    }
+
+    if (priorityParam && priorityParam !== "all") {
+      whereClause.priority = priorityParam.toUpperCase();
+    }
+
+    if (doneParam && doneParam !== "all") {
+      whereClause.done = doneParam === "true";
+    }
+
     const tasks = await prisma.task.findMany({
-      where: { userId: user.id },
+      where: whereClause,
       include: {
         subject: true,
       },

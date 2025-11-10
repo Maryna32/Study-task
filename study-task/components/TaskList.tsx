@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -8,40 +9,32 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import TaskItem from "./TaskItem";
-import { useRouter } from "next/navigation";
+import { getAuthToken } from "@/lib/auth";
 
 function TaskList() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const fetchTasks = async () => {
+      setLoading(true);
+      setError("");
+
       try {
-        const raw = localStorage.getItem("sb-enwjskgehaagktyijvzj-auth-token");
-
-        if (!raw) {
-          setError("Користувач не авторизований");
-          setLoading(false);
-          return;
-        }
-
-        const data = JSON.parse(raw);
-
-        const token =
-          data?.access_token ||
-          data?.currentSession?.access_token ||
-          data?.session?.access_token;
+        const token = getAuthToken();
 
         if (!token) {
-          console.log("STRUCTURE:", data);
-          setError("Не вдалося знайти access_token");
-          setLoading(false);
+          setError("Користувач не авторизований");
           return;
         }
 
-        const res = await fetch("/api/tasks", {
+        const queryString = searchParams.toString();
+        const url = `/api/tasks${queryString ? `?${queryString}` : ""}`;
+
+        const res = await fetch(url, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -61,7 +54,7 @@ function TaskList() {
     };
 
     fetchTasks();
-  }, []);
+  }, [searchParams]);
 
   const handleEdit = (taskId: string) => {
     router.push(`/edit-task?id=${taskId}`);
@@ -88,7 +81,7 @@ function TaskList() {
       });
 
       if (res.ok) {
-        setTasks((prev) => prev.filter((t) => t.id !== taskId));
+        setTasks((prev) => prev.filter((t) => t.id !== Number(taskId)));
       } else {
         const error = await res.json();
         alert(error.error || "Помилка при видаленні завдання");
@@ -125,8 +118,8 @@ function TaskList() {
                 <TaskItem
                   key={task.id}
                   task={task}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
+                  onEdit={() => handleEdit(String(task.id))}
+                  onDelete={() => handleDelete(String(task.id))}
                 />
               ))}
             </TableBody>

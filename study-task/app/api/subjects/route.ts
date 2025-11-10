@@ -24,12 +24,16 @@ export async function GET(req: Request) {
 
     const subjects = await prisma.subject.findMany({
       where: { userId: user.id },
-      select: { name: true },
+      select: {
+        id: true,
+        name: true,
+      },
       orderBy: { name: "asc" },
     });
 
     return NextResponse.json({
-      subjects: subjects.map((s) => s.name),
+      success: true,
+      subjects: subjects,
     });
   } catch (err) {
     console.error("Error fetching subjects:", err);
