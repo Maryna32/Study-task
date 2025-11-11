@@ -108,7 +108,7 @@ function QuickStatistic() {
 
   if (!stats || stats.total === 0) {
     return (
-      <div className="p-6 border rounded-lg text-center space-y-3">
+      <div className="p-6 rounded-lg text-center space-y-3">
         <p className="text-lg font-medium">У вас поки немає жодного завдання</p>
         <p className="text-sm text-muted-foreground">
           Почніть додавати завдання, щоб побачити статистику
