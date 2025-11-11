@@ -214,7 +214,11 @@ export function TaskForm({
               }
             }}
           />
-          <Button size="sm" onClick={handleAddSubject}>
+          <Button
+            size="sm"
+            onClick={handleAddSubject}
+            className="w-fit bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)]"
+          >
             Підтвердити
           </Button>
           <Button
