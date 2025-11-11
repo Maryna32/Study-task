@@ -184,7 +184,11 @@ function Statistic() {
                     <VictoryChart theme={VictoryTheme.material}>
                       <VictoryAxis
                         fixLabelOverlap
-                        tickFormat={(t) => t.toLocaleDateString()}
+                        tickFormat={(t: Date | number) =>
+                          t instanceof Date
+                            ? t.toLocaleDateString()
+                            : new Date(t).toLocaleDateString()
+                        }
                       />
                       <VictoryAxis dependentAxis />
                       <VictoryLine data={lineData} />
