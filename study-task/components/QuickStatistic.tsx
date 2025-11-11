@@ -121,40 +121,40 @@ function QuickStatistic() {
 
   return (
     <div className="p-6 rounded-lg space-y-4 mt-[30px] ml-0 pl-0">
-      <h3 className="text-xl font-bold ">Швидка статистика</h3>
+      <h3 className="text-xl font-bold">Швидка статистика</h3>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {/* Всього завдань */}
-        <div className="p-4 bg-blue-50 rounded-lg font-bold text-black">
-          <p className="text-sm text-gray-700">Всього</p>
+        <div className="p-4 bg-slate-800/40 border border-slate-700/50 rounded-lg text-blue-400 font-bold">
+          <p className="text-sm opacity-70">Всього</p>
           <p className="text-2xl">{stats.total}</p>
         </div>
 
         {/* Виконано */}
-        <div className="p-4 bg-green-50 rounded-lg text-green-600 font-bold">
-          <p className="text-sm text-muted-foreground flex items-center gap-2 ">
+        <div className="p-4 bg-slate-800/40 border border-slate-700/50 rounded-lg text-green-400 font-bold">
+          <p className="text-sm opacity-70 flex items-center gap-2">
             Виконано
             <Check size={15} strokeWidth={5} className="relative top-[1px]" />
           </p>
-          <p className="text-2xl ">{stats.done}</p>
+          <p className="text-2xl">{stats.done}</p>
         </div>
 
         {/* В процесі */}
-        <div className="p-4 bg-yellow-50 rounded-lg text-yellow-600 font-bold">
-          <p className="text-sm text-muted-foreground flex items-center gap-2">
+        <div className="p-4 bg-slate-800/40 border border-slate-700/50 rounded-lg text-yellow-400 font-bold">
+          <p className="text-sm opacity-70 flex items-center gap-2">
             В процесі
             <PencilLine
               size={15}
               strokeWidth={3}
-              className="relative top-[1px] "
+              className="relative top-[1px]"
             />
           </p>
           <p className="text-2xl">{stats.inProgress}</p>
         </div>
 
         {/* Прострочені */}
-        <div className="p-4 bg-red-50  rounded-lg text-red-600 font-bold">
-          <p className="text-sm text-muted-foreground flex items-center gap-2">
+        <div className="p-4 bg-slate-800/40 border border-slate-700/50 rounded-lg text-red-400 font-bold">
+          <p className="text-sm opacity-70 flex items-center gap-2">
             Прострочені
             <TriangleAlert
               size={15}
@@ -166,8 +166,8 @@ function QuickStatistic() {
         </div>
 
         {/* Сьогодні */}
-        <div className="p-4 bg-purple-50 rounded-lg font-bold text-purple-600">
-          <p className="text-sm text-muted-foreground flex items-center gap-2">
+        <div className="p-4 bg-slate-800/40 border border-slate-700/50 rounded-lg text-purple-400 font-bold">
+          <p className="text-sm opacity-70 flex items-center gap-2">
             Сьогодні
             <CalendarDays
               size={15}
@@ -175,12 +175,12 @@ function QuickStatistic() {
               className="relative top-[1px]"
             />
           </p>
-          <p className="text-2xl ">{stats.today}</p>
+          <p className="text-2xl">{stats.today}</p>
         </div>
 
         {/* Найближчі 7 днів */}
-        <div className="p-4 bg-orange-50 rounded-lg font-bold text-orange-600">
-          <p className="text-sm text-muted-foreground">Цього тижня</p>
+        <div className="p-4 bg-slate-800/40 border border-slate-700/50 rounded-lg text-orange-400 font-bold">
+          <p className="text-sm opacity-70">Цього тижня</p>
           <p className="text-2xl">{stats.thisWeek}</p>
         </div>
       </div>
@@ -191,7 +191,7 @@ function QuickStatistic() {
           <span>Прогрес виконання</span>
           <span className="font-semibold">{completionRate}%</span>
         </div>
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+        <div className="w-full bg-slate-700/50 rounded-full h-3">
           <div
             className="bg-green-500 h-3 rounded-full transition-all duration-300"
             style={{ width: `${completionRate}%` }}
@@ -201,14 +201,12 @@ function QuickStatistic() {
 
       {/* Високий пріоритет як акцент */}
       {stats.highPriority > 0 && (
-        <div className="p-4 bg-pink-50 border-2 border-pink-200 rounded-lg flex items-center justify-between">
-          <div className="flex items-center gap-2 text-pink-600 font-semibold">
+        <div className="p-4 bg-slate-800/40 border-2 border-pink-700/50 rounded-lg flex items-center justify-between text-pink-400 font-semibold">
+          <div className="flex items-center gap-2">
             <BookAlert size={20} strokeWidth={3} />
             <span>Завдань високого пріоритету</span>
           </div>
-          <span className="text-2xl font-bold text-pink-600">
-            {stats.highPriority}
-          </span>
+          <span className="text-2xl font-bold">{stats.highPriority}</span>
         </div>
       )}
     </div>
