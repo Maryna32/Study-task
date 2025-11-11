@@ -14,7 +14,11 @@ function TasksPage() {
       <div className="pl-[30px] pt-[20px]">
         <Filters />
         <TaskList />
-        <Button size="sm" className="w-fit mt-2" onClick={goToAddTasks}>
+        <Button
+          size="sm"
+          className="w-fit mt-2 bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] mb-[2-px]"
+          onClick={goToAddTasks}
+        >
           Додати завдання
         </Button>
       </div>

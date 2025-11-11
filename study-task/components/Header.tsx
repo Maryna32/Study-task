@@ -4,7 +4,7 @@ import Link from "next/link";
 
 function Header() {
   return (
-    <div className="flex items-center justify-between w-full pl-[30px] pr-[20px] pt-[20px] pb-[10px] border-b border-[var(--text-secondary)]">
+    <div className="flex items-center justify-between w-full px-8 py-5 border-b border-[var(--border)] bg-[var(--card)]">
       <Link href="/">
         <div className="flex items-center gap-2">
           <BookText size={30} />

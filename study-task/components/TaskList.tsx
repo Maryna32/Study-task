@@ -101,7 +101,7 @@ function TaskList() {
       {tasks.length === 0 ? (
         <p className="text-gray-500">Завдань поки немає</p>
       ) : (
-        <div className="border rounded-lg w-fit">
+        <div className="table-container">
           <Table>
             <TableHeader>
               <TableRow>

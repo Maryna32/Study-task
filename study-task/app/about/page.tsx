@@ -1,5 +1,7 @@
 "use client";
 import { Header } from "@/components/index";
+import Image from "next/image";
+import image1 from "@/app/image/photo.png";
 
 function AboutPage() {
   return (
@@ -30,10 +32,10 @@ function AboutPage() {
             </p>
           </div>
           <div className="flex-shrink-0">
-            <img
-              src="https://www.prostir.ua/wp-content/uploads/2020/02/3Z_029-e1581010556457-1024x778.jpg"
+            <Image
+              src={image1}
               alt="Проект"
-              className="w-[300px] h-auto rounded-lg"
+              className="w-[300px] h-auto rounded-lg mix-blend-screen"
             />
           </div>
         </div>

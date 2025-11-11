@@ -84,7 +84,7 @@ function QuickStatistic() {
 
   if (loading) {
     return (
-      <div className="p-6 border rounded-lg">
+      <div className="p-6 rounded-lg">
         <p className="text-muted-foreground">Завантаження статистики...</p>
       </div>
     );
@@ -92,11 +92,16 @@ function QuickStatistic() {
 
   if (!isAuthenticated) {
     return (
-      <div className="p-6 border rounded-lg text-center space-y-3">
+      <div className="p-6 rounded-lg text-center space-y-3">
         <p className="text-lg font-medium">
           Для перегляду статистики увійдіть в систему
         </p>
-        <Button onClick={() => router.push("/login")}>Увійти</Button>
+        <Button
+          className="w-fit bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)]"
+          onClick={() => router.push("/login")}
+        >
+          Увійти
+        </Button>
       </div>
     );
   }
@@ -115,14 +120,14 @@ function QuickStatistic() {
   const completionRate = Math.round((stats.done / stats.total) * 100);
 
   return (
-    <div className="p-6 border rounded-lg space-y-4 mt-[30px]">
+    <div className="p-6 rounded-lg space-y-4 mt-[30px] ml-0 pl-0">
       <h3 className="text-xl font-bold ">Швидка статистика</h3>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {/* Всього завдань */}
-        <div className="p-4 bg-blue-50 rounded-lg font-bold">
-          <p className="text-sm text-muted-foreground ">Всього</p>
-          <p className="text-2xl ">{stats.total}</p>
+        <div className="p-4 bg-blue-50 rounded-lg font-bold text-black">
+          <p className="text-sm text-gray-700">Всього</p>
+          <p className="text-2xl">{stats.total}</p>
         </div>
 
         {/* Виконано */}

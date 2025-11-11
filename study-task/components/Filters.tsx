@@ -95,7 +95,11 @@ function Filters() {
           <SelectContent className="bg-white">
             <SelectItem value="all">Всі дисципліни</SelectItem>
             {subjects.map((subject) => (
-              <SelectItem key={subject.id} value={String(subject.id)}>
+              <SelectItem
+                key={subject.id}
+                value={String(subject.id)}
+                className="cursor-pointer"
+              >
                 {subject.name}
               </SelectItem>
             ))}
@@ -115,7 +119,11 @@ function Filters() {
           <SelectContent className="bg-white">
             <SelectItem value="all">Всі пріоритети</SelectItem>
             {priorityOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
+              <SelectItem
+                key={option.value}
+                value={option.value}
+                className="cursor-pointer"
+              >
                 {option.label}
               </SelectItem>
             ))}
@@ -135,7 +143,11 @@ function Filters() {
           <SelectContent className="bg-white">
             <SelectItem value="all">Всі завдання</SelectItem>
             {doneOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
+              <SelectItem
+                key={option.value}
+                value={option.value}
+                className="cursor-pointer"
+              >
                 {option.label}
               </SelectItem>
             ))}
@@ -143,7 +155,11 @@ function Filters() {
         </Select>
       </div>
 
-      <Button variant="outline" onClick={resetFilters}>
+      <Button
+        variant="outline"
+        onClick={resetFilters}
+        className="w-fit bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)]"
+      >
         Скинути фільтри
       </Button>
     </div>

@@ -14,6 +14,11 @@ import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
+interface SubjectItem {
+  id: string;
+  name: string;
+}
+
 interface TaskFormProps {
   initialData?: {
     title: string;
@@ -43,7 +48,7 @@ export function TaskForm({
   submitLabel,
   formTitle,
 }: TaskFormProps) {
-  const [subjects, setSubjects] = useState<string[]>([]);
+  const [subjects, setSubjects] = useState<SubjectItem[]>([]);
   const [showInput, setShowInput] = useState(false);
   const [newSubject, setNewSubject] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
@@ -52,6 +57,7 @@ export function TaskForm({
   const [deadline, setDeadline] = useState(initialData?.deadline || "");
   const [priorityOptions] = useState(["Високий", "Середній", "Низький"]);
   const [statusOptions] = useState(["Не розпочато", "В процесі", "Завершено"]);
+
   const [selectedPriority, setSelectedPriority] = useState(
     initialData
       ? initialData.priority === "HIGH"
@@ -61,6 +67,7 @@ export function TaskForm({
         : "Низький"
       : "Середній"
   );
+
   const [selectedStatus, setSelectedStatus] = useState(
     initialData
       ? initialData.status === "NOT_STARTED"
@@ -70,6 +77,7 @@ export function TaskForm({
         : "Завершено"
       : "Не розпочато"
   );
+
   const [isDone, setIsDone] = useState(initialData?.done || false);
   const [notes, setNotes] = useState(initialData?.notes || "");
   const router = useRouter();
@@ -83,13 +91,15 @@ export function TaskForm({
       const res = await fetch("/api/subjects", {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       const json = await res.json();
+
       if (res.ok) {
         if (json.subjects.length === 0) {
           setShowInput(true);
         } else {
           setSubjects(json.subjects);
-          setSelectedSubject(initialData?.subject || json.subjects[0]);
+          setSelectedSubject(initialData?.subject || json.subjects[0].name);
         }
       }
     };
@@ -99,7 +109,8 @@ export function TaskForm({
   const handleAddSubject = async () => {
     const name = newSubject.trim();
     if (!name) return;
-    if (subjects.includes(name)) {
+
+    if (subjects.some((s) => s.name === name)) {
       toast.warning(`Предмет "${name}" вже існує`);
       return;
     }
@@ -115,7 +126,8 @@ export function TaskForm({
     });
     const json = await res.json();
     if (res.ok && json.success) {
-      setSubjects((prev) => [...prev, name]);
+      const newObj = { id: json.id, name };
+      setSubjects((prev) => [...prev, newObj]);
       setSelectedSubject(name);
       setNewSubject("");
       setShowInput(false);
@@ -159,20 +171,20 @@ export function TaskForm({
   };
 
   return (
-    <div className="flex flex-col gap-2 p-4 border rounded-md w-[800px]">
+    <div className="flex flex-col gap-2 p-4 rounded-md w-[800px]">
       <h2 className="text-lg font-semibold">{formTitle}</h2>
 
-      <Label>Виберіть предмет</Label>
+      <Label className="mt-[15px]">Виберіть предмет</Label>
       {!showInput ? (
         <div className="flex items-center gap-2">
           <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-            <SelectTrigger className="max-w-xs bg-white">
+            <SelectTrigger className="max-w-xs bg-[var(--card)] text-[var(--text)] border-[var(--border)]">
               <SelectValue placeholder="Оберіть предмет" />
             </SelectTrigger>
-            <SelectContent className="bg-white">
+            <SelectContent className="bg-[var(--card)] text-[var(--text)] border-[var(--border)]">
               {subjects.map((subject) => (
-                <SelectItem key={subject} value={subject}>
-                  {subject}
+                <SelectItem key={subject.id} value={subject.name}>
+                  {subject.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -231,10 +243,10 @@ export function TaskForm({
 
       <Label>Пріоритет</Label>
       <Select value={selectedPriority} onValueChange={setSelectedPriority}>
-        <SelectTrigger className="max-w-xs bg-white">
+        <SelectTrigger className="max-w-xs bg-[var(--card)] text-[var(--text)] border-[var(--border)]">
           <SelectValue placeholder="Оберіть пріоритет" />
         </SelectTrigger>
-        <SelectContent className="bg-white">
+        <SelectContent className="bg-[var(--card)] text-[var(--text)] border-[var(--border)]">
           {priorityOptions.map((p) => (
             <SelectItem key={p} value={p}>
               {p}
@@ -252,10 +264,10 @@ export function TaskForm({
             setIsDone(value === "Завершено");
           }}
         >
-          <SelectTrigger className="max-w-xs bg-white">
+          <SelectTrigger className="max-w-xs bg-[var(--card)] text-[var(--text)] border-[var(--border)]">
             <SelectValue placeholder="Статус" />
           </SelectTrigger>
-          <SelectContent className="bg-white">
+          <SelectContent className="bg-[var(--card)] text-[var(--text)] border-[var(--border)]">
             {statusOptions.map((s) => (
               <SelectItem key={s} value={s}>
                 {s}
@@ -282,7 +294,11 @@ export function TaskForm({
       />
 
       <div className="flex gap-5 mt-2">
-        <Button size="sm" onClick={handleSubmit}>
+        <Button
+          size="sm"
+          onClick={handleSubmit}
+          className="w-fit bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)]"
+        >
           {submitLabel}
         </Button>
         <Button
@@ -290,7 +306,7 @@ export function TaskForm({
           variant="outline"
           onClick={() => router.push("/tasks")}
         >
-          Назад
+          {initialData ? "Назад" : "Перейти до завдань"}
         </Button>
       </div>
     </div>

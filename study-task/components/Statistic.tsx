@@ -98,8 +98,8 @@ function Statistic() {
   return (
     <div>
       <Header />
-      <div className="pl-[30px] pt-[20px]">
-        <h1 className="text-xl font-semibold mb-6">
+      <div className="pl-[30px] pt-[40px]">
+        <h1 className="text-xl font-semibold mb-6 text-center">
           Кількість завдань по предметам
         </h1>
         {loading ? (

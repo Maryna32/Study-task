@@ -82,11 +82,17 @@ function Dropmenu() {
           <DropdownMenuSeparator />
 
           {isLoggedIn ? (
-            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+            <DropdownMenuItem
+              onClick={handleLogout}
+              className="cursor-pointer data-[highlighted]:text-[var(--primary-hover)]"
+            >
               Вийти
             </DropdownMenuItem>
           ) : (
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem
+              asChild
+              className="cursor-pointer data-[highlighted]:text-[var(--primary-hover)]"
+            >
               <Link href="/login" className="w-full cursor-pointer">
                 Увійти
               </Link>

@@ -142,7 +142,11 @@ export default function AuthPage() {
         <div className="flex flex-col gap-2 mt-2">
           {isSignUp ? (
             <>
-              <Button onClick={handleSignUp} disabled={loading}>
+              <Button
+                onClick={handleSignUp}
+                disabled={loading}
+                className="bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)]"
+              >
                 {loading ? "Завантаження..." : "Зареєструватися"}
               </Button>
               <Button
@@ -158,7 +162,11 @@ export default function AuthPage() {
             </>
           ) : (
             <>
-              <Button onClick={handleLogin} disabled={loading}>
+              <Button
+                onClick={handleLogin}
+                disabled={loading}
+                className=" bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)]"
+              >
                 {loading ? "Завантаження..." : "Увійти"}
               </Button>
               <Button
