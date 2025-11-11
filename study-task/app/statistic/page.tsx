@@ -1,11 +1,14 @@
 "use client";
 import { Statistic } from "@/components/index";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 function StatisticPage() {
   return (
-    <div>
-      <Statistic />
-    </div>
+    <ProtectedRoute>
+      <div>
+        <Statistic />
+      </div>
+    </ProtectedRoute>
   );
 }
 

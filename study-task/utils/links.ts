@@ -1,12 +1,13 @@
 type NavLink = {
   href: string;
   label: string;
+  public: boolean;
 };
 
 export const links: NavLink[] = [
-  { href: "/", label: "Головна сторінка" },
-  { href: "/about", label: "Про додаток" },
-  { href: "/add-task", label: "Додати завдання" },
-  { href: "/statistic", label: "Статистика" },
-  { href: "/tasks", label: "Всі завдання" },
+  { href: "/", label: "Головна сторінка", public: true },
+  { href: "/about", label: "Про додаток", public: true },
+  { href: "/add-task", label: "Додати завдання", public: false },
+  { href: "/statistic", label: "Статистика", public: false },
+  { href: "/tasks", label: "Всі завдання", public: false },
 ];

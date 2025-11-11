@@ -54,6 +54,8 @@ function Dropmenu() {
 
   if (isLoggedIn === null) return null;
 
+  const visibleLinks = isLoggedIn ? links : links.filter((link) => link.public);
+
   return (
     <div className="ml-auto mr-20">
       <DropdownMenu>
@@ -71,7 +73,7 @@ function Dropmenu() {
           align="center"
           sideOffset={10}
         >
-          {links.map((link) => (
+          {visibleLinks.map((link) => (
             <DropdownMenuItem key={link.href}>
               <Link href={link.href} className="w-full">
                 {link.label}
