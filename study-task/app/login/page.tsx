@@ -39,7 +39,7 @@ export default function AuthPage() {
       options: {
         emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/login/callback`,
         data: {
-          full_name: name.trim(), // Зберігаємо ім'я в метаданих
+          full_name: name.trim(),
         },
       },
     });
@@ -67,15 +67,28 @@ export default function AuthPage() {
       email,
       password,
     });
+
     setLoading(false);
 
     if (error) {
       toast.error(error.message);
-    } else {
-      toast.success("Успішний вхід!");
-      router.push("/");
-      router.refresh();
+      return;
     }
+
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError) {
+      toast.error(userError.message);
+      return;
+    }
+
+    if (userData.user && !userData.user.email_confirmed_at) {
+      toast.warning("Будь ласка, підтвердіть свою пошту перед входом");
+      return;
+    }
+
+    toast.success("Успішний вхід!");
+    router.push("/");
+    router.refresh();
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
