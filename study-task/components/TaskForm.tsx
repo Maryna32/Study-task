@@ -189,7 +189,11 @@ export function TaskForm({
               ))}
             </SelectContent>
           </Select>
-          <Button size="sm" onClick={() => setShowInput(true)}>
+          <Button
+            size="sm"
+            className="w-fit bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)]"
+            onClick={() => setShowInput(true)}
+          >
             Додати предмет
           </Button>
         </div>
