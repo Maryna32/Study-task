@@ -37,7 +37,7 @@ export default function AuthPage() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/login/callback`,
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/login/callback`,
         data: {
           full_name: name.trim(), // Зберігаємо ім'я в метаданих
         },
