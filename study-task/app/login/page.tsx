@@ -33,6 +33,7 @@ export default function AuthPage() {
     }
 
     setLoading(true);
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -43,17 +44,28 @@ export default function AuthPage() {
         },
       },
     });
+
     setLoading(false);
 
     if (error) {
       toast.error(error.message);
-    } else {
-      toast.success("Перевір пошту для підтвердження реєстрації!");
-      setName("");
-      setEmail("");
-      setPassword("");
-      setIsSignUp(false);
+      return;
     }
+
+    if (
+      data.user &&
+      data.user.identities &&
+      data.user.identities.length === 0
+    ) {
+      toast.error("Користувач з таким email вже існує");
+      return;
+    }
+
+    toast.success("Перевірте пошту для підтвердження реєстрації!");
+    setName("");
+    setEmail("");
+    setPassword("");
+    setIsSignUp(false);
   };
 
   const handleLogin = async () => {
